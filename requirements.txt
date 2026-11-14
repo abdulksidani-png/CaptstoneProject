@@ -1,0 +1,6 @@
+streamlit
+lifelines==0.30.3
+pandas
+numpy
+scikit-learn
+matplotlib
