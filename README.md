@@ -29,9 +29,10 @@ Enter a patient's age, tumor size, positive lymph nodes, histologic grade and ER
 14. What the model says about each predictor
 15. How far ahead the model can predict
 16. Comparison with the Nottingham Prognostic Index
-17. Patient prediction form
-18. Conclusions and limitations
-19. References
+17. Calibration: are the predicted probabilities accurate?
+18. Patient prediction form
+19. Conclusions and limitations
+20. References
 
 ## Data
 
@@ -79,6 +80,20 @@ The Nottingham Prognostic Index (NPI) is the standard clinical score for early b
 
 On the test set, this model's lead is +0.038 over the NPI alone (bootstrap 95% CI +0.003 to +0.073) and +0.020 over the NPI with age and ER added (95% CI +0.005 to +0.036). Most of the gain comes from age and ER, which the NPI does not include; the rest comes from modelling tumor size, nodes and grade separately with their own shapes. The NPI was built to predict death from breast cancer, and on that outcome it scores 0.675.
 
+## Calibration
+
+The C-index only checks ranking. Calibration checks whether the predicted probabilities, the numbers the app shows, match what actually happened.
+
+| Check | 5 years | 10 years |
+|---|---|---|
+| Mean predicted vs. observed survival (out-of-fold, training set) | 78.7% vs. 78.5% | 59.7% vs. 59.2% |
+| Index of prediction accuracy, out-of-fold | 0.135 | 0.150 |
+| Index of prediction accuracy, test set | 0.114 | 0.115 |
+
+On average the predictions match reality closely. The index of prediction accuracy (a rescaled Brier score) means the model is 11–15% more accurate than giving everyone the average survival. One weak spot: for the highest-risk 10% of patients, the model underestimates 10-year survival (16% predicted vs. 25% observed).
+
+![Calibration of predicted survival at 5 and 10 years](figures/calibration.png)
+
 ## Results
 
 - **Tumor size:** each doubling raises the risk of death by about 29%.
@@ -96,6 +111,7 @@ On the test set, this model's lead is +0.038 over the NPI alone (bootstrap 95% C
 | `requirements.txt` | Python packages the app needs |
 | `data/brca_metabric_clinical_data.tsv` | METABRIC clinical data |
 | `figures/predictor_effects.png` | Effect plots shown above |
+| `figures/calibration.png` | Calibration plots shown above |
 
 ## Run the app locally
 
@@ -112,7 +128,7 @@ The app opens at `http://localhost:8501`.
 - METABRIC patients were diagnosed between 1977 and 2005, and treatment has improved since, so predictions reflect that historical cohort.
 - Complete-case analysis dropped 187 patients with a missing predictor; multiple imputation could add statistical power.
 - Grouping grades 1 and 2 was needed for stable strata, but it loses the difference between them.
-- Calibration (whether predicted probabilities match observed survival) was not assessed.
+- For the highest-risk patients, the model underestimates 10-year survival (16% predicted vs. 25% observed). The model was not recalibrated, to avoid tuning it to the test set.
 - HER2 and PR status and treatment are not in the model.
 - This is a student capstone project, not a clinical tool.
 
