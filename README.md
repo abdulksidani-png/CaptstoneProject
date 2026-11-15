@@ -1,11 +1,11 @@
 # Predicting Overall Survival in Breast Cancer Patients Using Cox Proportional Hazards Regression
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://captstoneproject-qeani92jxftayhyhl4f3qu.streamlit.app/)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/abdulksidani-png/CaptstoneProject/blob/main/notebooks/cox_overall_survival.ipynb)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://breast-cancer-overall-survival-cox-nwganxk3fs5q3gargnbappm.streamlit.app/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/abdulksidani-png/breast-cancer-overall-survival-cox/blob/main/notebooks/cox_overall_survival.ipynb)
 
 A Cox proportional hazards model that predicts overall survival for breast cancer patients from five clinical variables known at diagnosis, with a web app for individual patient predictions. Every modelling choice is tested in the notebook or supported by published research.
 
-**Live app:** https://captstoneproject-qeani92jxftayhyhl4f3qu.streamlit.app/
+**Live app:** https://breast-cancer-overall-survival-cox-nwganxk3fs5q3gargnbappm.streamlit.app/
 
 Enter a patient's age, tumor size, positive lymph nodes, histologic grade and ER status to see their predicted 5-year and 10-year survival, median survival, and survival curve up to 15 years.
 
