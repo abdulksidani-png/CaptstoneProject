@@ -28,9 +28,10 @@ Enter a patient's age, tumor size, positive lymph nodes, histologic grade and ER
 13. How stable the test score is
 14. What the model says about each predictor
 15. How far ahead the model can predict
-16. Patient prediction form
-17. Conclusions and limitations
-18. References
+16. Comparison with the Nottingham Prognostic Index
+17. Patient prediction form
+18. Conclusions and limitations
+19. References
 
 ## Data
 
@@ -66,6 +67,18 @@ The final model passes the proportional hazards test for every term.
 
 The main C-index ranks patients by predicted 10-year survival, because lifelines' built-in version uses only the partial hazard and ignores the strata. Both versions are reported. Across 30 different random splits, the test C-index ranges from 0.650 to 0.713 (mean 0.683).
 
+## Comparison with the Nottingham Prognostic Index
+
+The Nottingham Prognostic Index (NPI) is the standard clinical score for early breast cancer, combining tumor size, lymph node stage and grade (Galea et al., 1992). All models below are compared on the same patients (one patient without an NPI value is left out):
+
+| Model | CV C-index | Test C-index |
+|---|---|---|
+| NPI score on its own | 0.637 | 0.637 |
+| NPI + age (spline) + ER (strata) | 0.664 | 0.653 |
+| **This model** | **0.678** | **0.674** |
+
+On the test set, this model's lead is +0.038 over the NPI alone (bootstrap 95% CI +0.003 to +0.073) and +0.020 over the NPI with age and ER added (95% CI +0.005 to +0.036). Most of the gain comes from age and ER, which the NPI does not include; the rest comes from modelling tumor size, nodes and grade separately with their own shapes. The NPI was built to predict death from breast cancer, and on that outcome it scores 0.675.
+
 ## Results
 
 - **Tumor size:** each doubling raises the risk of death by about 29%.
@@ -83,7 +96,6 @@ The main C-index ranks patients by predicted 10-year survival, because lifelines
 | `requirements.txt` | Python packages the app needs |
 | `data/brca_metabric_clinical_data.tsv` | METABRIC clinical data |
 | `figures/predictor_effects.png` | Effect plots shown above |
-| `.devcontainer/` | Configuration for running the app in GitHub Codespaces |
 
 ## Run the app locally
 
