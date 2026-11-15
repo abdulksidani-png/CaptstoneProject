@@ -57,18 +57,20 @@ def train_model():
     train_df, test_df = train_test_split(data_cols, test_size=0.2, shuffle=True,
                                          random_state=42, stratify=data_cols[surv_status])
 
-    # Fit the final model on the training set: stratified by ER status and grade, spline for age
+    # Fit the final model on the training set (same model as the notebook, see sections 8-10 there for why):
+    # ER and grade as strata, spline for age, log for tumor size, spline for lymph nodes
     cph = CoxPHFitter()
     cph.fit(train_df, duration_col=surv_time, event_col=surv_status,
             strata=['ER status measured by IHC_Positve', 'High grade (3)'],
-            formula="bs(`Age at Diagnosis`, df=4, extrapolation='clip') + `Tumor Size` + `Lymph nodes examined positive`")
+            formula=("bs(`Age at Diagnosis`, df=4, extrapolation='clip') + np.log1p(`Tumor Size`)"
+                     " + bs(`Lymph nodes examined positive`, df=3, extrapolation='clip')"))
     return cph
 
 cph = train_model()
 
 st.title("Breast Cancer Survival Predictor")
 st.write("Enter a patient's information at diagnosis to see their predicted chance "
-         "of being alive over the next 20 years.")
+         "of being alive over the next 15 years.")
 
 # Input boxes for each variable the model was trained on
 col1, col2 = st.columns(2)
@@ -87,9 +89,9 @@ patient = pd.DataFrame([{
     'ER status measured by IHC_Positve': 1 if er == "Positive" else 0
 }])
 
-# Predicted chance of being alive (from any cause), month by month for 20 years
-# (capped at 240 months because few patients were followed longer than that)
-months = np.arange(0, 241)
+# Predicted chance of being alive (from any cause), month by month for 15 years
+# (capped at 180 months: beyond that, too few patients were still followed in some strata, see notebook section 15)
+months = np.arange(0, 181)
 surv = cph.predict_survival_function(patient, times=months).iloc[:, 0]
 
 # Median survival: the first month the predicted survival chance drops to 50% or below
@@ -97,7 +99,7 @@ below_half = surv[surv <= 0.5]
 if len(below_half) > 0:
     median = f"{below_half.index[0] / 12:.1f} years"
 else:
-    median = "> 20 years"
+    median = "> 15 years"
 
 # Show the results side by side
 r1, r2, r3 = st.columns(3)
@@ -117,5 +119,6 @@ fig.tight_layout()
 st.pyplot(fig)
 
 st.caption("Cox proportional hazards model for overall survival, stratified by ER status and grade "
-           "(3 vs 1-2) with a spline for age, trained on 1,434 METABRIC patients "
-           "(5-fold CV C-index 0.676, test C-index 0.665). Student capstone project, not a clinical tool.")
+           "(3 vs 1-2), with a spline for age, log tumor size and a spline for lymph nodes. Trained on "
+           "1,434 METABRIC patients (5-fold CV C-index 0.680, test C-index 0.674). "
+           "Student capstone project, not a clinical tool.")
