@@ -7,6 +7,13 @@ import matplotlib.pyplot as plt #used for visuals
 from sklearn.model_selection import train_test_split #used to split data into training and test sets
 from pathlib import Path #used to find the data file next to app.py
 
+# Name and icon shown in the browser tab (must be the first Streamlit command)
+st.set_page_config(
+    page_title="Breast Cancer Survival Predictor",
+    page_icon="🎗️",
+    layout="centered",
+)
+
 # Load, clean, and fit the model once (cached so it doesn't retrain every time an input changes)
 @st.cache_resource
 def train_model():
